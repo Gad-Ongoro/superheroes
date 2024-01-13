@@ -27,6 +27,8 @@ def home():
         </body>
     """)
 
+
+""" HEROES """
 class Heroes(Resource):    
     def get(self):
         all_heroes = [hero.to_dict() for hero in Hero.query.all()]
@@ -35,6 +37,17 @@ class Heroes(Resource):
     
     pass
 api.add_resource(Heroes, '/heroes')
+
+class Hero_by_id(Resource):
+    def get(self, id):
+        hero = Hero.query.filter_by(id = id).first()
+        if hero:
+            return make_response(jsonify(hero.to_dict()), 200)
+        else:
+            response = make_response({"error": "Hero not found"}, 404)
+            return response
+                
+api.add_resource(Hero_by_id, '/heroes/<int:id>')
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

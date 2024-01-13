@@ -58,5 +58,16 @@ class Powers(Resource):
     
 api.add_resource(Powers, '/powers')
 
+class Powers_by_id(Resource):
+    def get(self, id):
+        power = Power.query.filter_by(id = id).first()
+        if power:            
+            response = make_response(jsonify(power.to_dict()), 200)
+            return response
+        else:
+            response = make_response(jsonify({"error": "Power not found"}))
+            return response
+
+api.add_resource(Powers_by_id, '/powers/<int:id>')
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

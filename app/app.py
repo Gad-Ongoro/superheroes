@@ -74,20 +74,42 @@ class Powers_by_id(Resource):
             data = request.get_json()
             for attr in data:
                 setattr(power, attr, data.get(attr))
+                
             db.session.commit()
+            
             response = make_response(jsonify({
                 "id" : power.id,
                 "name" : power.name,
                 "description" : power.description                
             }), 200)            
             return response
+        
         else:
             response = make_response(jsonify({
                 "error": "Power not found"
             }), 404)
-            return response           
-
+            return response
 api.add_resource(Powers_by_id, '/powers/<int:id>')
+
+
+""" HERO_POWERS """
+class Hero_Powers(Resource):
+    def post(self):
+        data = request.get_json()
+        new_hero_power = HeroPower(
+            strength = data["strength"],
+            power_id = data['power_id'],
+            hero_id = data["hero_id"]
+        )
+        db.session.add(new_hero_power)
+        db.session.commit()
+        
+        response = make_response(jsonify(new_hero_power), 201)
+        return response
+        pass
+
+api.add_resource(Hero_Powers, '/hero_powers')
+
 
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

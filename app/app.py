@@ -49,5 +49,14 @@ class Hero_by_id(Resource):
                 
 api.add_resource(Hero_by_id, '/heroes/<int:id>')
 
+""" POWERS """
+class Powers(Resource):
+    def get(self):
+        powers = [power.to_dict() for power in Power.query.all()]
+        response = make_response(jsonify(powers), 200)
+        return response
+    
+api.add_resource(Powers, '/powers')
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)

@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 
-from flask import Flask, jsonify, make_response
+from flask import Flask, jsonify, request, make_response
 from flask_migrate import Migrate
 from flask_restful import Api, Resource
 
@@ -65,9 +65,29 @@ class Powers_by_id(Resource):
             response = make_response(jsonify(power.to_dict()), 200)
             return response
         else:
-            response = make_response(jsonify({"error": "Power not found"}))
+            response = make_response(jsonify({"error": "Power not found"}), 404)
             return response
+        
+    def patch(self, id):
+        power = Power.query.filter_by(id = id).first()
+        if power:
+            data = request.get_json()
+            for attr in data:
+                setattr(power, attr, data.get(attr))
+            db.session.commit()
+            response = make_response(jsonify({
+                "id" : power.id,
+                "name" : power.name,
+                "description" : power.description                
+            }), 200)            
+            return response
+        else:
+            response = make_response(jsonify({
+                "error": "Power not found"
+            }), 404)
+            return response           
 
 api.add_resource(Powers_by_id, '/powers/<int:id>')
+
 if __name__ == '__main__':
     app.run(port=5555, debug=True)
